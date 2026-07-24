@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 from urllib.parse import quote_plus
 import os
@@ -24,3 +24,6 @@ SessionLocal = sessionmaker(
     autoflush=False,
     bind=engine
 )
+
+# NEW
+Base = declarative_base()
