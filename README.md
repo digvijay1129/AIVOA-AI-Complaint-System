@@ -1,14 +1,16 @@
 # 🧠 AIVOA – AI-Powered Pharmaceutical Complaint Management System
 
-An AI-powered Pharmaceutical Complaint Management System that automates complaint extraction, quality assessment, and complaint management using **React, FastAPI, MySQL, and Groq LLM**.
+An AI-powered Pharmaceutical Complaint Management System that automates complaint extraction, AI-based quality assessment, intelligent complaint updates, and complaint management using **React, FastAPI, LangGraph, Groq LLM, and MySQL**.
 
 ---
 
 # 📖 Project Overview
 
-AIVOA (AI Voice of Assurance) is designed to simplify pharmaceutical complaint management by leveraging Artificial Intelligence. Users can upload complaint PDFs or manually enter complaint details, and the system automatically extracts structured information, generates AI-based quality assessments, and stores complaints in a MySQL database.
+AIVOA (AI Voice of Assurance) is an intelligent Pharmaceutical Complaint Management System designed to simplify and automate the complaint handling process.
 
-The application also includes an AI Chat Assistant that can answer complaint-related questions and update complaint fields using natural language.
+Users can upload pharmaceutical complaint PDFs or manually enter complaint text. The system uses AI to extract structured complaint information, generate quality assessments, answer complaint-related questions, and intelligently update complaint fields using natural language.
+
+The project integrates **LangGraph** to orchestrate AI workflows, making the application modular, scalable, and easier to extend with future AI capabilities.
 
 ---
 
@@ -17,13 +19,14 @@ The application also includes an AI Chat Assistant that can answer complaint-rel
 ## 📄 Complaint Processing
 
 - Upload Complaint PDF
+- Extract text using PyMuPDF
 - Manual Complaint Text Input
-- AI-based Complaint Data Extraction
-- Automatic Form Filling
+- AI-powered Complaint Information Extraction
+- Automatic Complaint Form Filling
 
 ---
 
-## 🤖 AI Assessment
+## 🤖 AI Quality Assessment
 
 Automatically generates:
 
@@ -33,17 +36,19 @@ Automatically generates:
 
 ---
 
-## 💬 AI Assistant
+## 💬 AI Complaint Assistant
 
 Supports:
 
 - Complaint Summary
+- Severity Analysis
 - Batch Number Queries
 - Manufacturing Date Queries
 - Expiry Date Queries
 - Missing Information Detection
-- Next Action Suggestions
-- Complaint Field Updates using Natural Language
+- Suggested Next Actions
+- Complaint Investigation Assistance
+- Natural Language Complaint Field Updates
 
 Example:
 
@@ -51,7 +56,7 @@ Example:
 The batch number is BMX240602.
 ```
 
-The AI automatically updates the Batch Number field.
+The AI automatically updates only the relevant complaint field.
 
 ---
 
@@ -61,10 +66,11 @@ The AI automatically updates the Batch Number field.
 - Complaint History
 - Status Tracking
 - View Complaint Details
+- AI-generated Complaint Assessment
 
 ---
 
-# 🛠 Technology Stack
+# 🚀 Technology Stack
 
 ## Frontend
 
@@ -73,20 +79,29 @@ The AI automatically updates the Batch Number field.
 - Axios
 - CSS
 
+---
+
 ## Backend
 
 - FastAPI
 - Python
+
+---
+
+## AI
+
+- LangGraph
+- Groq API
+- Llama-3.3-70B-Versatile
+
+---
 
 ## Database
 
 - MySQL
 - SQLAlchemy
 
-## AI
-
-- Groq API
-- Llama-3.3-70B-Versatile
+---
 
 ## PDF Processing
 
@@ -101,46 +116,51 @@ AIVOA
 │
 ├── backend
 │   ├── app
-│   │   ├── api
-│   │   │   ├── upload.py
-│   │   │   ├── complaint.py
-│   │   │   ├── chat.py
-│   │   │   └── update.py
-│   │   │
-│   │   ├── database
-│   │   ├── models
-│   │   ├── schemas
-│   │   ├── services
-│   │   │   └── groq_service.py
-│   │   │
-│   │   └── main.py
 │   │
-│   ├── uploads
-│   ├── requirements.txt
-│   └── .env
+│   ├── api
+│   │   ├── upload.py
+│   │   ├── complaint.py
+│   │   ├── chat.py
+│   │   ├── update.py
+│   │   └── complaints.py
+│   │
+│   ├── graph
+│   │   └── complaint_graph.py
+│   │
+│   ├── database
+│   ├── models
+│   ├── schemas
+│   │
+│   ├── services
+│   │   └── groq_service.py
+│   │
+│   └── main.py
+│
+├── uploads
 │
 ├── frontend
 │   ├── src
-│   │   ├── components
-│   │   │   ├── ComplaintForm.jsx
-│   │   │   ├── ComplaintHistory.jsx
-│   │   │   └── AIAssistant.jsx
-│   │   │
-│   │   ├── api.js
-│   │   ├── App.jsx
-│   │   └── main.jsx
 │   │
-│   ├── package.json
-│   └── vite.config.js
+│   ├── components
+│   │   ├── ComplaintForm.jsx
+│   │   ├── ComplaintHistory.jsx
+│   │   ├── AIAssistant.jsx
+│   │   └── Navbar.jsx
+│   │
+│   ├── api.js
+│   ├── App.jsx
+│   └── main.jsx
 │
-└── README.md
+├── requirements.txt
+├── README.md
+└── .env
 ```
 
 ---
 
 # ⚙️ Installation
 
-## 1. Clone Repository
+## Clone Repository
 
 ```bash
 git clone https://github.com/your-username/AIVOA.git
@@ -150,29 +170,29 @@ cd AIVOA
 
 ---
 
-## 2. Backend Setup
+# Backend Setup
 
-### Create Virtual Environment
+Create Virtual Environment
 
 ```bash
 python -m venv venv
 ```
 
-### Activate Virtual Environment
+Activate Environment
 
-Windows
+### Windows
 
 ```bash
 venv\Scripts\activate
 ```
 
-Linux / macOS
+### Linux/macOS
 
 ```bash
 source venv/bin/activate
 ```
 
-### Install Dependencies
+Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -180,9 +200,9 @@ pip install -r requirements.txt
 
 ---
 
-## 3. Configure Environment Variables
+# Configure Environment Variables
 
-Create a `.env` file inside the backend folder.
+Create a `.env` file inside the backend directory.
 
 ```env
 GROQ_API_KEY=your_groq_api_key
@@ -192,40 +212,19 @@ DATABASE_URL=mysql+pymysql://username:password@localhost/aivoa_complaints
 
 ---
 
-## 4. Database Setup
+# Database Setup
 
-Create the database:
+Create Database
 
 ```sql
 CREATE DATABASE aivoa_complaints;
-
-USE aivoa_complaints;
-
-CREATE TABLE complaints (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    complaint_source VARCHAR(100),
-    customer_name VARCHAR(255),
-    customer_email VARCHAR(255),
-    product_name VARCHAR(255),
-    product_strength VARCHAR(100),
-    batch_number VARCHAR(100),
-    manufacturing_date DATE,
-    expiry_date DATE,
-    affected_quantity INT,
-    complaint_category VARCHAR(150),
-    complaint_description TEXT,
-    initial_severity VARCHAR(50),
-    suggested_action TEXT,
-    written_assessment TEXT,
-    status VARCHAR(50) DEFAULT 'Open',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
 ```
+
+Run your SQLAlchemy models or create the complaints table manually.
 
 ---
 
-## 5. Run Backend
+# Run Backend
 
 ```bash
 uvicorn app.main:app --reload
@@ -239,7 +238,7 @@ http://127.0.0.1:8000
 
 ---
 
-## 6. Run Frontend
+# Run Frontend
 
 ```bash
 cd frontend
@@ -257,118 +256,120 @@ http://localhost:5173
 
 ---
 
-# 📡 API Endpoints
+# 📡 REST API Endpoints
 
 | Method | Endpoint | Description |
 |---------|----------|-------------|
-| POST | `/api/upload` | Upload PDF and extract complaint |
-| POST | `/api/extract-text` | Extract complaint from text |
-| POST | `/api/update-fields` | Update complaint fields using AI |
-| POST | `/api/chat` | Ask AI questions |
-| POST | `/api/complaints` | Save complaint |
-| GET | `/api/complaints` | Retrieve complaint history |
+| POST | `/api/upload` | Upload PDF |
+| POST | `/api/extract-text` | Extract Complaint Information |
+| POST | `/api/chat` | AI Complaint Assistant |
+| POST | `/api/update-fields` | Update Complaint Fields |
+| POST | `/api/complaints` | Save Complaint |
+| GET | `/api/complaints` | Complaint History |
 
 ---
 
-# 🤖 AI Workflow
+# 🤖 LangGraph AI Workflow
 
 ```
-                PDF Upload / Manual Complaint
-                            │
-                            ▼
-                Groq LLM Complaint Extraction
-                            │
-                            ▼
-               Structured Complaint Information
-                            │
-                            ▼
-                AI Quality Assessment Generation
-                            │
-                            ▼
-                 Complaint Form Auto-Fill
-                            │
-                            ▼
-                  Save Complaint to MySQL
-                            │
-                            ▼
-                     Complaint History
-                            │
-                            ▼
-                  AI Chat & Field Updates
-```
-
----
-
-# 🧩 Project Architecture
-
-```
-Frontend (React)
-        │
-        ▼
-Axios API Calls
-        │
-        ▼
-FastAPI Backend
-        │
-        ├──────────────┐
-        ▼              ▼
-Groq LLM          MySQL Database
-        │              │
-        └──────► Complaint Data
+                 User Input
+       (PDF / Text / Chat / Update)
+                    │
+                    ▼
+              FastAPI Backend
+                    │
+                    ▼
+            LangGraph Router Node
+                    │
+      ┌─────────────┼──────────────┐
+      │             │              │
+      ▼             ▼              ▼
+Extract Node    Chat Node     Update Node
+      │             │              │
+      └─────────────┼──────────────┘
+                    │
+                    ▼
+              Groq LLM API
+                    │
+                    ▼
+          AI Generated Response
+                    │
+                    ▼
+             React Frontend
 ```
 
 ---
 
-# 📸 Screenshots
-
-Include screenshots of:
-
-- Complaint Form
-  <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/e80bd515-9282-4853-9d6b-8a239dc29a27" />
-  
-- PDF Upload
-  <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/3b7456af-867d-4adf-943c-b6b9394dc75b" />
-
-- AI Assistant
-  <img width="611" height="895" alt="image" src="https://github.com/user-attachments/assets/bb47e6a3-c73c-4d7a-b805-33dbb5a93f47" />
-
-- Complaint History
-  <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/a01b6780-cb15-43d5-a7c0-8e755073438d" />
-
-- AI Assessment
-  <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/6b8636fe-af8d-4c7e-8c44-630ecc65047c" />
-  
-- Chat
-  <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/1628c5c7-b5b3-4b92-961f-7b8b89b5c0f3" />
-
-- Update Information
-  <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/a0c44510-4cfc-4d01-8666-bc42f1efbb2c" />
-
-
-Example:
+# 🏗 System Architecture
 
 ```
-screenshots/
-├── dashboard.png
-├── upload.png
-├── complaint-form.png
-├── ai-chat.png
-└── history.png
+                React Frontend
+                      │
+                  Axios API
+                      │
+                 FastAPI Backend
+                      │
+                 LangGraph Router
+          ┌───────────┼───────────┐
+          │           │           │
+          ▼           ▼           ▼
+     Extract      Chat Node   Update Node
+          │           │           │
+          └───────────┼───────────┘
+                      ▼
+                 Groq LLM API
+                      │
+        ┌─────────────┴─────────────┐
+        │                           │
+Structured Complaint         AI Assessment
+        │                           │
+        └─────────────┬─────────────┘
+                      ▼
+                 MySQL Database
+                      │
+                      ▼
+               Complaint History
 ```
+
+---
+
+# 🧠 Why LangGraph?
+
+LangGraph is used as an AI orchestration framework.
+
+Instead of every API calling the LLM directly, LangGraph routes requests to specialised AI nodes.
+
+Current Nodes:
+
+- Router Node
+- Complaint Extraction Node
+- AI Chat Node
+- Complaint Update Node
+
+Benefits:
+
+- Modular AI architecture
+- Easy to add new AI workflows
+- Better maintainability
+- Scalable workflow orchestration
+- Industry-standard AI design pattern
 
 ---
 
 # 🚀 Future Enhancements
 
 - User Authentication
-- Dashboard Analytics
-- Export to Excel/PDF
-- Email Notifications
+- OCR for Scanned PDFs
 - AI Root Cause Analysis
-- OCR Support for Scanned PDFs
-- Role-Based Access Control
-- Complaint Trend Analysis
-- Field Highlighting after AI Updates
+- Dashboard Analytics
+- Complaint Trend Prediction
+- Email Notifications
+- Export to Excel
+- Export to PDF
+- Multi-language Complaint Processing
+- Role-Based Access Control (RBAC)
+- Human Approval Workflow
+- Retrieval-Augmented Generation (RAG)
 
 ---
 
@@ -380,29 +381,32 @@ screenshots/
 
 # 📜 License
 
-This project is licensed under the **MIT License**.
+This project is licensed under the MIT License.
 
 ---
 
-## ⭐ Acknowledgements
+# 🙏 Acknowledgements
 
+- LangGraph
 - Groq API
 - FastAPI
 - React.js
 - SQLAlchemy
-- PyMuPDF
 - MySQL
+- PyMuPDF
 
 ---
 
-## 📌 Key Highlights
+# ⭐ Key Highlights
 
 - ✅ AI-powered Pharmaceutical Complaint Extraction
+- ✅ LangGraph-based AI Workflow Orchestration
 - ✅ AI-generated Quality Assessment
 - ✅ AI Complaint Assistant
-- ✅ Natural Language Form Updates
+- ✅ Natural Language Complaint Updates
 - ✅ FastAPI REST APIs
-- ✅ React-based Responsive UI
+- ✅ React + Vite Frontend
 - ✅ MySQL Database Integration
 - ✅ PDF Processing with PyMuPDF
-- ✅ End-to-End Complaint Management Workflow
+- ✅ Modular AI Architecture
+- ✅ End-to-End Pharmaceutical Complaint Management System
