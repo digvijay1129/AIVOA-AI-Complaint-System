@@ -48,6 +48,11 @@ async def upload_pdf(file: UploadFile = File(...)):
 async def extract_text(data: ComplaintText):
     complaint_data = extract_complaint_data(data.text)
 
+    print("================================")
+    print("Complaint Data Sent To Frontend:")
+    print(complaint_data)
+    print("================================")
+
     return {
         "message": "Complaint processed successfully",
         "data": complaint_data,

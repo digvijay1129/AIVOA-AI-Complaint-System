@@ -6,21 +6,21 @@ import ComplaintHistory from "./components/ComplaintHistory";
 
 function App() {
   const [formData, setFormData] = useState({
-  complaint_source: "",
-  customer_name: "",
-  customer_email: "",
-  product_name: "",
-  product_strength: "",
-  batch_number: "",
-  manufacturing_date: "",
-  expiry_date: "",
-  quantity: "",
-  description: "",
+    complaint_source: "",
+    customer_name: "",
+    customer_email: "",
+    product_name: "",
+    product_strength: "",
+    batch_number: "",
+    manufacturing_date: "",
+    expiry_date: "",
+    quantity: "",
+    description: "",
 
-  initial_severity: "",
-  suggested_action: "",
-  written_assessment: "",
-});
+    initial_severity: "",
+    suggested_action: "",
+    written_assessment: "",
+  });
 
   const [complaints, setComplaints] = useState([]);
 
@@ -77,7 +77,7 @@ function App() {
         </div>
 
         <div className="col-span-4">
-          <AIAssistant setFormData={setFormData} />
+          <AIAssistant formData={formData} setFormData={setFormData} />
         </div>
       </div>
     </div>

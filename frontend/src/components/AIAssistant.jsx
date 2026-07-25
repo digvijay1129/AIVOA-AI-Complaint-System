@@ -1,20 +1,26 @@
 import { useState, useRef, useEffect } from "react";
-import api, { askAI, extractComplaintFromText } from "../api";
+import api, {
+    askAI,
+    extractComplaintFromText,
+    updateComplaintFields,
+} from "../api";
 
-export default function AIAssistant({ setFormData }) {
+export default function AIAssistant({ formData, setFormData }) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [message, setMessage] = useState("🤖 AI Ready");
     const [question, setQuestion] = useState("");
     const [chatHistory, setChatHistory] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const chatEndRef = useRef(null);
+    // 1. Ref attached directly to the chat container element
+    const chatContainerRef = useRef(null);
 
+    // 2. Safely scroll ONLY the container to the bottom when messages or loading states change
     useEffect(() => {
-        chatEndRef.current?.scrollIntoView({
-            behavior: "smooth",
-        });
-    }, [chatHistory]);
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    }, [chatHistory, loading]);
 
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files[0]) {
@@ -28,13 +34,13 @@ export default function AIAssistant({ setFormData }) {
             return;
         }
 
-        const formData = new FormData();
-        formData.append("file", selectedFile);
+        const payload = new FormData();
+        payload.append("file", selectedFile);
 
         try {
             setMessage("⏳ Processing PDF with AI...");
 
-            const res = await api.post("/upload", formData);
+            const res = await api.post("/upload", payload);
 
             setMessage("✅ PDF processed successfully");
 
@@ -98,9 +104,72 @@ export default function AIAssistant({ setFormData }) {
                 lowerText.includes(word)
             );
 
-            const isComplaint = !isQuestion;
+            const updateKeywords = [
+                "batch",
+                "batch number",
+                "quantity",
+                "customer",
+                "product",
+                "strength",
+                "manufacturing",
+                "expiry",
+                "source",
+                "change",
+                "update",
+                "actually",
+                "correct"
+            ];
 
-            if (isComplaint) {
+            const hasComplaintData =
+                formData.customer_name ||
+                formData.product_name ||
+                formData.batch_number;
+
+            const isUpdate =
+                hasComplaintData &&
+                updateKeywords.some(word =>
+                    lowerText.includes(word)
+                );
+
+            if (isQuestion) {
+                const res = await askAI(userQuestion);
+
+                setChatHistory((prev) => [
+                    ...prev,
+                    {
+                        role: "assistant",
+                        text: res.answer,
+                        time: new Date().toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        }),
+                    },
+                ]);
+            } else if (isUpdate) {
+                const res = await updateComplaintFields(
+                    formData,
+                    userQuestion
+                );
+
+                if (res.updated_fields) {
+                    setFormData(prev => ({
+                        ...prev,
+                        ...res.updated_fields
+                    }));
+                }
+
+                setChatHistory((prev) => [
+                    ...prev,
+                    {
+                        role: "assistant",
+                        text: "✅ Complaint form updated successfully.",
+                        time: new Date().toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        }),
+                    },
+                ]);
+            } else {
                 const res = await extractComplaintFromText(userQuestion);
 
                 if (res && res.data) {
@@ -111,19 +180,11 @@ export default function AIAssistant({ setFormData }) {
                     ...prev,
                     {
                         role: "assistant",
-                        text: "✅ Complaint information extracted successfully. The form has been updated.",
-                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                    },
-                ]);
-            } else {
-                const res = await askAI(userQuestion);
-
-                setChatHistory((prev) => [
-                    ...prev,
-                    {
-                        role: "assistant",
-                        text: res.answer,
-                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        text: "✅ Complaint information extracted successfully.",
+                        time: new Date().toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        }),
                     },
                 ]);
             }
@@ -248,17 +309,20 @@ export default function AIAssistant({ setFormData }) {
                     AI Copilot Chat
                 </h3>
 
-                <div style={{
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "12px",
-                    height: "300px",
-                    overflowY: "auto",
-                    padding: "16px",
-                    backgroundColor: "#f8fafc",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "12px"
-                }}>
+                <div 
+                    ref={chatContainerRef}
+                    style={{
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "12px",
+                        height: "300px",
+                        overflowY: "auto",
+                        padding: "16px",
+                        backgroundColor: "#f8fafc",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "12px"
+                    }}
+                >
                     {chatHistory.length === 0 ? (
                         <div style={{ margin: "auto", textAlign: "center", color: "#94a3b8", fontSize: "13px", maxWidth: "220px" }}>
                             💬 Ask questions about this complaint or paste raw complaint text directly.
@@ -316,8 +380,6 @@ export default function AIAssistant({ setFormData }) {
                                     🤖 AI is typing...
                                 </div>
                             )}
-
-                            <div ref={chatEndRef} />
                         </>
                     )}
                 </div>

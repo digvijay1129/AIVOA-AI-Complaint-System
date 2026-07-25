@@ -34,4 +34,14 @@ export const extractComplaintFromText = async (text) => {
   return response.data;
 };
 
+// Update Complaint Fields API
+export const updateComplaintFields = async (currentData, message) => {
+  const response = await api.post("/update-fields", {
+    current_data: currentData,
+    message: message,
+  });
+
+  return response.data;
+};
+
 export default api;

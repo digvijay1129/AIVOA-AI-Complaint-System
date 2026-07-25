@@ -186,3 +186,71 @@ User Question:
     )
 
     return response.choices[0].message.content
+
+
+def update_complaint_fields(current_data: dict, message: str):
+    prompt = f"""
+You are an AI assistant for a Pharmaceutical Complaint Management System.
+
+The current complaint data is:
+{json.dumps(current_data, indent=2)}
+
+The user has provided an update:
+
+"{message}"
+
+Your task:
+
+1. Identify ONLY the fields that should be updated.
+2. Do NOT return fields that are unchanged.
+3. If the user mentions quantity like "48 capsules", return only the numeric value:
+   "48"
+4. Convert manufacturing_date and expiry_date to YYYY-MM-DD format whenever possible.
+5. If no valid field updates are found, return an empty JSON object.
+
+Allowed fields:
+
+- complaint_source
+- customer_name
+- customer_email
+- product_name
+- product_strength
+- batch_number
+- manufacturing_date
+- expiry_date
+- quantity
+- description
+
+Return ONLY valid JSON.
+
+Example:
+{{
+    "batch_number": "BMX240602",
+    "quantity": "48"
+}}
+"""
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+            }
+        ],
+        temperature=0,
+    )
+
+    result = response.choices[0].message.content
+
+    print("Groq Raw Response:")
+    print(result)
+
+    result = result.replace("```json", "").replace("```", "").strip()
+
+    updated = json.loads(result)
+
+    print("Parsed Response:")
+    print(updated)
+
+    return updated
