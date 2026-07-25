@@ -1,13 +1,19 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Depends
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.database.database import SessionLocal
+from app.graph.complaint_graph import graph
 from app.models.complaint import Complaint
 from app.schemas.complaint import ComplaintCreate
 
 router = APIRouter()
+
+
+class TextExtractRequest(BaseModel):
+    text: str
 
 
 def get_db():
@@ -26,6 +32,22 @@ def parse_date(date_str):
         return datetime.strptime(date_str, "%Y-%m-%d").date()
     except Exception:
         return None
+
+
+@router.post("/extract-complaint")
+def extract_complaint(data: TextExtractRequest):
+    result = graph.invoke(
+        {
+            "request_type": "extract",
+            "input_text": data.text,
+            "current_data": {},
+            "result": {},
+        }
+    )
+    return {
+        "message": "Complaint extracted successfully",
+        "data": result["result"],
+    }
 
 
 @router.post("/complaints")

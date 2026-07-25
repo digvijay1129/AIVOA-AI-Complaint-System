@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from app.services.groq_service import update_complaint_fields
+from app.graph.complaint_graph import graph
 
 router = APIRouter()
 
@@ -14,12 +14,18 @@ class UpdateRequest(BaseModel):
 @router.post("/update-fields")
 async def update_fields(data: UpdateRequest):
 
-    updated_fields = update_complaint_fields(
-        data.current_data,
-        data.message
+    result = graph.invoke(
+        {
+            "request_type": "update",
+            "input_text": data.message,
+            "current_data": data.current_data,
+            "result": {},
+        }
     )
+    
+    updated_fields = result["result"]
 
     return {
         "message": "Fields updated successfully",
-        "updated_fields": updated_fields
+        "updated_fields": updated_fields,
     }

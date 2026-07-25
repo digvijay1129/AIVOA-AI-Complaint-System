@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from app.services.groq_service import ask_complaint_question
+from app.graph.complaint_graph import graph
 
 router = APIRouter()
 
@@ -13,8 +13,13 @@ class ChatRequest(BaseModel):
 @router.post("/chat")
 def chat(request: ChatRequest):
 
-    answer = ask_complaint_question(request.question)
+    result = graph.invoke(
+        {
+            "request_type": "chat",
+            "input_text": request.question,
+            "current_data": {},
+            "result": {}
+        }
+    )
 
-    return {
-        "answer": answer
-    }
+    return result["result"]
